@@ -1,5 +1,5 @@
 //
-//  LoginViewController.swift
+//  RegisterViewController.swift
 //  EX_AuthAL
 //
 //  Created by Nguyễn Văn Hiếu on 30/9/24.
@@ -7,9 +7,7 @@
 
 import UIKit
 
-let textFieldColor: UIColor = UIColor(red: 247/255, green: 244/255, blue: 237/255, alpha: 1)
-
-class LoginViewController: UIViewController {
+class RegisterViewController: UIViewController {
     
     //MARK: - Properties
     private let backgroundImageView: UIImageView = {
@@ -29,18 +27,16 @@ class LoginViewController: UIViewController {
         return view
     }()
     
-    private let logoImageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.image = UIImage(named: "logo")
-        imageView.alpha = 1
-        imageView.contentMode = .scaleToFill
-        return imageView
+    private let topContainerView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .none
+        return view
     }()
     
     private let titleLabel: UILabel = {
         let label = UILabel()
-        label.text = "Welcome back"
-        label.textColor = accentColor
+        label.text = "Register"
+        label.textColor = .white
         label.textAlignment = .center
         label.numberOfLines = 0
         label.font = .systemFont(ofSize: .init(36), weight: .bold)
@@ -49,12 +45,21 @@ class LoginViewController: UIViewController {
     
     private let subtitleLabel: UILabel = {
         let label = UILabel()
-        label.text = "Login to your account"
-        label.textColor = .lightGray
+        label.text = "Create a new account"
+        label.textColor = .white
         label.font = .systemFont(ofSize: .init(16), weight: .medium)
         label.numberOfLines = 0
         label.textAlignment = .center
         return label
+    }()
+    
+    private let fullNameTextField: UITextField = {
+        let textField = UITextField()
+        textField.attributedPlaceholder = NSAttributedString(string: "Fullname",
+                                                             attributes: [.foregroundColor: accentColor])
+        textField.backgroundColor = textFieldColor
+        textField.layer.cornerRadius = 10
+        return textField
     }()
     
     private let emailTextField: UITextField = {
@@ -69,6 +74,16 @@ class LoginViewController: UIViewController {
     private let passwordTextField: UITextField = {
         let textField = UITextField()
         textField.attributedPlaceholder = NSAttributedString(string: "Password",
+                                                             attributes: [.foregroundColor: accentColor])
+        textField.backgroundColor = textFieldColor
+        textField.layer.cornerRadius = 10
+        textField.isSecureTextEntry = true
+        return textField
+    }()
+    
+    private let confirmPwTextField: UITextField = {
+        let textField = UITextField()
+        textField.attributedPlaceholder = NSAttributedString(string: "Confirm Password",
                                                              attributes: [.foregroundColor: accentColor])
         textField.backgroundColor = textFieldColor
         textField.layer.cornerRadius = 10
@@ -93,7 +108,7 @@ class LoginViewController: UIViewController {
     
     private let descriptionLabel: UILabel = {
         let label = UILabel()
-        label.text = "Don't have an account? Sign Up"
+        label.text = "Already have an account? Log In"
         label.font = .systemFont(ofSize: .init(14), weight: .medium)
         label.textColor = .lightGray
         label.numberOfLines = 0
@@ -117,9 +132,25 @@ class LoginViewController: UIViewController {
         return stackView
     }()
     
+    private let descCharterTextView: UITextView = {
+        let _textView = UITextView()
+        _textView.text = """
+                        By creating an account, you agree to our
+                        Terms of Service and Privacy Policy.
+                        """
+        _textView.textColor = .lightGray
+        _textView.isEditable = false
+        _textView.font = .systemFont(ofSize: .init(14), weight: .medium)
+        _textView.textAlignment = .center
+        _textView.isScrollEnabled = false
+        _textView.backgroundColor = .clear
+        return _textView
+    }()
+    
     private let eyeIcon = UIImageView(image: UIImage(systemName: "eye.slash"))
     
     private var isShowPw:Bool = false
+    private var isShowPwCurrent:Bool = false
     
     //MARK: - Life Cycle
     override func viewDidLoad() {
@@ -127,7 +158,7 @@ class LoginViewController: UIViewController {
         setupViews()
         setupConstraints()
     }
-
+    
     //MARK: - Tap Show Password
     @objc private func tapShowPw() {
         if isShowPw {
@@ -140,24 +171,30 @@ class LoginViewController: UIViewController {
             eyeIcon.image = UIImage(systemName: "eye.slash")
         }
     }
+
 }
 
-extension LoginViewController {
+extension RegisterViewController {
     
     //MARK: - Setup Views
     private func setupViews() {
         view.addSubview(backgroundImageView)
-        view.addSubview(logoImageView)
+        view.addSubview(topContainerView)
         view.addSubview(bottomContainerView)
         
+        topContainerView.addSubview(titleLabel)
+        topContainerView.addSubview(subtitleLabel)
+        
         bottomContainerView.addSubview(containerView)
-        containerView.addSubview(titleLabel)
-        containerView.addSubview(subtitleLabel)
+
         containerView.addSubview(inputStackView)
+        containerView.addSubview(descCharterTextView)
         
         //add StackView
+        inputStackView.addArrangedSubview(fullNameTextField)
         inputStackView.addArrangedSubview(emailTextField)
         inputStackView.addArrangedSubview(passwordTextField)
+        inputStackView.addArrangedSubview(confirmPwTextField)
 
         containerView.addSubview(loginButton)
         containerView.addSubview(descriptionLabel)
@@ -230,12 +267,12 @@ extension LoginViewController {
             bottomContainerView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 3/4)
         ])
         
-        logoImageView.translatesAutoresizingMaskIntoConstraints = false
+        topContainerView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            logoImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
-            logoImageView.bottomAnchor.constraint(equalTo: bottomContainerView.topAnchor, constant: -10),
-            logoImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: 0),
-            logoImageView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.5)
+            topContainerView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
+            topContainerView.bottomAnchor.constraint(equalTo: bottomContainerView.topAnchor, constant: -10),
+            topContainerView.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: 0),
+            topContainerView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.75)
         ])
         
         containerView.translatesAutoresizingMaskIntoConstraints = false
@@ -248,9 +285,9 @@ extension LoginViewController {
         
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            titleLabel.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 0),
-            titleLabel.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 0),
-            titleLabel.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: 0),
+            titleLabel.topAnchor.constraint(equalTo: topContainerView.topAnchor, constant: 0),
+            titleLabel.leadingAnchor.constraint(equalTo: topContainerView.leadingAnchor, constant: 0),
+            titleLabel.trailingAnchor.constraint(equalTo: topContainerView.trailingAnchor, constant: 0),
             titleLabel.heightAnchor.constraint(equalToConstant: .init(40))
         ])
         
@@ -264,10 +301,18 @@ extension LoginViewController {
         
         inputStackView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            inputStackView.topAnchor.constraint(equalTo: subtitleLabel.bottomAnchor, constant: 70),
+            inputStackView.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 70),
             inputStackView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
             inputStackView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
-            inputStackView.heightAnchor.constraint(equalToConstant: .init(100))
+            inputStackView.heightAnchor.constraint(equalToConstant: .init(200))
+        ])
+        
+        descCharterTextView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            descCharterTextView.topAnchor.constraint(equalTo: inputStackView.bottomAnchor, constant: 20),
+            descCharterTextView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 0),
+            descCharterTextView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: 0),
+            descCharterTextView.heightAnchor.constraint(equalToConstant: 50)
         ])
         
         loginButton.translatesAutoresizingMaskIntoConstraints = false
@@ -275,7 +320,7 @@ extension LoginViewController {
             loginButton.bottomAnchor.constraint(equalTo: descriptionLabel.bottomAnchor, constant: -46),
             loginButton.leadingAnchor.constraint(equalTo: descriptionLabel.leadingAnchor, constant: 0),
             loginButton.trailingAnchor.constraint(equalTo: descriptionLabel.trailingAnchor, constant: 0),
-            loginButton.heightAnchor.constraint(equalToConstant: 50)
+            loginButton.heightAnchor.constraint(equalToConstant: 40)
         ])
         
         descriptionLabel.translatesAutoresizingMaskIntoConstraints = false

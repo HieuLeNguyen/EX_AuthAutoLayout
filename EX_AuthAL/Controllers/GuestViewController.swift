@@ -9,10 +9,10 @@ import UIKit
 
 let accentColor = UIColor(red: 255/255, green: 174/255, blue: 72/255, alpha: 1)
 
-class ViewController: UIViewController {
+class GuestViewController: UIViewController {
     
     //MARK: - Properies
-    let sloganLabel: UILabel = {
+    private let sloganLabel: UILabel = {
         let label = UILabel()
         label.text = "Best app for your trip"
         label.font = .systemFont(ofSize: .init(36), weight: .medium)
@@ -23,7 +23,9 @@ class ViewController: UIViewController {
         return label
     }()
     
-    let signupButton: UIButton = {
+//    lazy var thay thế cho let loại bỏ cảnh báo của swift về: self
+    
+    lazy private var signupButton: UIButton = {
         let button = UIButton()
         button.setTitle("Sign Up", for: .normal)
         button.layer.cornerRadius = 20
@@ -35,10 +37,11 @@ class ViewController: UIViewController {
         button.addTarget(self, action: #selector(buttonTouchUp), for: .touchUpInside)
         button.addTarget(self, action: #selector(buttonTouchUp), for: .touchUpOutside)
 
+        button.addTarget(self, action: #selector(buttonTapped(_: )), for: .touchUpInside)
         return button
     }()
     
-    let loginButton: UIButton = {
+    lazy private var loginButton: UIButton = {
         let button = UIButton()
         button.setTitle("Login", for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: .init(16), weight: .bold)
@@ -49,24 +52,26 @@ class ViewController: UIViewController {
         button.addTarget(self, action: #selector(buttonTouchDown), for: .touchDown)
         button.addTarget(self, action: #selector(buttonTouchUp), for: .touchUpInside)
         button.addTarget(self, action: #selector(buttonTouchUp), for: .touchUpOutside)
+        
+        button.addTarget(self, action: #selector(buttonTapped(_: )), for: .touchUpInside)
 
         return button
     }()
     
-    let backgroundImageView: UIImageView = {
+    private let backgroundImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.image = UIImage(named: "camtrai_bautroisao")
         imageView.contentMode = .scaleAspectFill
         return imageView
     }()
     
-    let topContainerView: UIView = {
+    private let topContainerView: UIView = {
         let view = UIView()
         view.backgroundColor = .none
         return view
     }()
     
-    let buttonStackView: UIStackView = {
+    private let buttonStackView: UIStackView = {
         let stackView = UIStackView()
         stackView.axis = .vertical
         stackView.spacing = 20
@@ -75,25 +80,28 @@ class ViewController: UIViewController {
         return stackView
     }()
     
+    // autolayout cho chiều ngang
     private var buttonStackViewHeightConstraint: NSLayoutConstraint!
     
+    //MARK: - Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
         setupViews()
         setupConstraints()
     }
     
+    //MARK: - View Will Transition
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
         
-        coordinator.animate(alongsideTransition: { _ in
+        coordinator.animate(alongsideTransition: { [self] _ in
             
             if size.width > size.height {
-                self.buttonStackView.axis = .horizontal
-                self.buttonStackViewHeightConstraint.constant = 80
+                buttonStackView.axis = .horizontal
+                buttonStackViewHeightConstraint.constant = 80
             } else {
-                self.buttonStackView.axis = .vertical
-                self.buttonStackViewHeightConstraint.constant = 140
+                buttonStackView.axis = .vertical
+                buttonStackViewHeightConstraint.constant = 140
             }
             
             self.view.layoutIfNeeded()
@@ -102,8 +110,9 @@ class ViewController: UIViewController {
     }
 }
 
-extension ViewController {
+extension GuestViewController {
         
+    //MARK: - Setup Views
     private func setupViews() {
         view.addSubview(backgroundImageView)
         view.addSubview(topContainerView)
@@ -115,6 +124,7 @@ extension ViewController {
         
     }
     
+    //MARK: - Setup Constraints
     private func setupConstraints(){
         backgroundImageView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
@@ -151,12 +161,33 @@ extension ViewController {
     }
     
     //MARK: - Handle event Touch
-    @objc func buttonTouchDown(_ sender: UIButton) {
+    @objc private func buttonTouchDown(_ sender: UIButton) {
         sender.backgroundColor = .lightGray // Màu nền khi nhấn
     }
 
-    @objc func buttonTouchUp(_ sender: UIButton) {
+    @objc private func buttonTouchUp(_ sender: UIButton) {
         sender.backgroundColor = sender == signupButton ? .white : accentColor // Màu nền khi nhả
+    }
+    
+    @objc private func buttonTapped(_ sender: UIButton) {
+        
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        
+        switch sender {
+        case loginButton:
+            if let vc = storyboard.instantiateViewController(withIdentifier: "LoginViewController") as? LoginViewController {
+                navigationController?.pushViewController(vc, animated: true)
+                navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
+                navigationItem.backBarButtonItem?.tintColor = .white
+            }
+        default :
+            if let vc = storyboard.instantiateViewController(withIdentifier: "RegisterViewController") as? RegisterViewController {
+                navigationController?.pushViewController(vc, animated: true)
+                navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
+                navigationItem.backBarButtonItem?.tintColor = .white
+            }
+        }
+
     }
 }
 
